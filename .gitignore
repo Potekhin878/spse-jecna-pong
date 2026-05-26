@@ -1,0 +1,13 @@
+# Vývojové prostředí IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# Zkompilovaný kód a binární soubory
+out/
+gen/
+
+# Logy a systémové soubory
+*.log
+.DS_Store
+Thumbs.db
