@@ -2,44 +2,60 @@ package cz.praha.jecna.pong.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 
-/**
- * Hlavní okno hry, které spravuje přepínání jednotlivých panelů pomocí CardLayout.
- */
 public class HerniOkno extends JFrame {
-    private final CardLayout spravceRozlozeni;
-    private final JPanel hlavniPanel;
-    private final Map<TypObrazovky, JPanel> obrazovky = new HashMap<>();
+    private final CardLayout spravceObrazovek;
+    private final JPanel hlavniKontejner;
+
+    // OPRAVA: Deklarace všech panelů jako privátní atributy pro potřeby JUnit testů
+    private final PanelMenu panelMenu;
+    private final PanelHry panelHry;
+    private final PanelKonecKola panelKonec;
 
     public HerniOkno() {
-        setTitle("PONG Arkáda - SPŠE Ječná");
+        setTitle("SPŠE Ječná - PONG");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
         setResizable(false);
 
-        spravceRozlozeni = new CardLayout();
-        hlavniPanel = new JPanel(spravceRozlozeni);
+        spravceObrazovek = new CardLayout();
+        hlavniKontejner = new JPanel(spravceObrazovek);
 
-        obrazovky.put(TypObrazovky.MENU, new PanelMenu(this));
-        obrazovky.put(TypObrazovky.HRA, new PanelHry(this));
-        obrazovky.put(TypObrazovky.KONEC_HRY, new PanelKonecKola(this));
+        // Inicializace jednotlivých panelů
+        this.panelHry = new PanelHry(this);
+        this.panelMenu = new PanelMenu(this);
+        this.panelKonec = new PanelKonecKola(this);
 
-        for (Map.Entry<TypObrazovky, JPanel> polozka : obrazovky.entrySet()) {
-            hlavniPanel.add(polozka.getValue(), polozka.getKey().name());
-        }
+        hlavniKontejner.add(panelMenu, TypObrazovky.MENU.name());
+        hlavniKontejner.add(panelHry, TypObrazovky.HRA.name());
+        hlavniKontejner.add(panelKonec, TypObrazovky.KONEC_HRY.name());
 
-        add(hlavniPanel);
+        add(hlavniKontejner);
+        pack();
+        setLocationRelativeTo(null);
         zobrazObrazovku(TypObrazovky.MENU);
     }
 
-    public void zobrazObrazovku(TypObrazovky typ) {
-        spravceRozlozeni.show(hlavniPanel, typ.name());
+    public void spustHru(boolean protiPocitaci) {
+        panelHry.nastavitRezim(protiPocitaci);
+        zobrazObrazovku(TypObrazovky.HRA);
     }
 
+    public void zobrazObrazovku(TypObrazovky typ) {
+        spravceObrazovek.show(hlavniKontejner, typ.name());
+        if (typ == TypObrazovky.HRA) {
+            SwingUtilities.invokeLater(() -> {
+                panelHry.requestFocusInWindow();
+            });
+        }
+    }
+
+    // OPRAVA: Tento getter zde chyběl a JUnit test ho vyžaduje
     public JPanel getObrazovku(TypObrazovky typ) {
-        return obrazovky.get(typ);
+        switch (typ) {
+            case MENU: return panelMenu;
+            case HRA: return panelHry;
+            case KONEC_HRY: return panelKonec;
+            default: return null;
+        }
     }
 }
