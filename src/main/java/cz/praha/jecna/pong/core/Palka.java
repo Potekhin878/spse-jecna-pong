@@ -1,40 +1,30 @@
 package cz.praha.jecna.pong.core;
 
-public class Palka {
-    private final int x; // Fixní horizontální pozice pálky
-    private int y;       // Vertikální pozice pálky (mění se při pohybu)
-    private final int sirka = 15;
-    private final int vyska = 100;
-    private final int rychlost = 7; // Počet pixelů, o které se pálka posune při jednom kroku
+/**
+ * Třída reprezentující hráčskou nebo počítačovou pálku, která dědí z HerniObjekt.
+ */
+public class Palka extends HerniObjekt {
+    private static final int RYCHLOST_POHYBU = 7;
+    private static final int SIRKA_PALKY = 15;
+    private static final int VYSKA_PALKY = 100;
 
-    private final int vyskaOkna;
-
-    public Palka(int startX, int sirkaOkna, int vyskaOkna) {
-        this.x = startX;
-        this.vyskaOkna = vyskaOkna;
-        // Vycentrování pálky na střed vertikální osy při inicializaci
-        this.y = vyskaOkna / 2 - vyska / 2;
+    public Palka(int startovniX, int maximalniSirkaOkna, int maximalniVyskaOkna) {
+        super(startovniX, maximalniVyskaOkna / 2 - VYSKA_PALKY / 2,
+                SIRKA_PALKY, VYSKA_PALKY,
+                maximalniSirkaOkna, maximalniVyskaOkna);
     }
 
-    // Posun pálky směrem nahoru s kontrolou horního okraje
     public void posunNahoru() {
-        y -= rychlost;
+        y -= RYCHLOST_POHYBU;
         if (y < 0) {
-            y = 0; // Zarážka na horním okraji okna
+            y = 0;
         }
     }
 
-    // Posun pálky směrem dolů s kontrolou dolního okraje
     public void posunDolu() {
-        y += rychlost;
-        if (y + vyska > vyskaOkna) {
-            y = vyskaOkna - vyska; // Zarážka na dolním okraji okna
+        y += RYCHLOST_POHYBU;
+        if (y > maximalniVyskaOkna - vyska) {
+            y = maximalniVyskaOkna - vyska;
         }
     }
-
-    // Gettery pro vykreslování a detekci kolizí s míčkem
-    public int getX() { return x; }
-    public int getY() { return y; }
-    public int getSirka() { return sirka; }
-    public int getVyska() { return vyska; }
 }

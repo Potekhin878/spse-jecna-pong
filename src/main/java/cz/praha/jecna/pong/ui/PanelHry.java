@@ -106,7 +106,13 @@ public class PanelHry extends JPanel implements ActionListener {
             this.skoreLeva = 0;
             this.skorePrava = 0;
             herniMicek.reset();
-            hlavniOkno.zobrazObrazovku(TypObrazovky.KONEC_HRY);
+
+            // OPRAVA: Přidán try-catch blok pro bezpečné ošetření výjimky při přepnutí obrazovky
+            try {
+                hlavniOkno.zobrazObrazovku(TypObrazovky.KONEC_HRY);
+            } catch (ChybaAplikaceException e) {
+                System.err.println("Chyba při ukončování hry a přechodu na výsledky: " + e.getMessage());
+            }
         } else {
             herniMicek.reset();
         }

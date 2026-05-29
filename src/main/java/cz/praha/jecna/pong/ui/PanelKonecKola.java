@@ -14,7 +14,14 @@ public class PanelKonecKola extends JPanel {
         add(text);
 
         JButton tlacitkoMenu = new JButton("Hlavní menu");
-        tlacitkoMenu.addActionListener(e -> okno.zobrazObrazovku(TypObrazovky.MENU));
+        tlacitkoMenu.addActionListener(e -> {
+            // OPRAVA: Tlačítko nyní bezpečně zachytí případnou výjimku při přepnutí obrazovky
+            try {
+                okno.zobrazObrazovku(TypObrazovky.MENU);
+            } catch (ChybaAplikaceException ex) {
+                System.err.println("Chyba při návratu do hlavního menu: " + ex.getMessage());
+            }
+        });
         add(tlacitkoMenu);
     }
 }

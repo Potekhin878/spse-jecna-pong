@@ -7,7 +7,6 @@ public class HerniOkno extends JFrame {
     private final CardLayout spravceObrazovek;
     private final JPanel hlavniKontejner;
 
-    // OPRAVA: Deklarace všech panelů jako privátní atributy pro potřeby JUnit testů
     private final PanelMenu panelMenu;
     private final PanelHry panelHry;
     private final PanelKonecKola panelKonec;
@@ -20,7 +19,6 @@ public class HerniOkno extends JFrame {
         spravceObrazovek = new CardLayout();
         hlavniKontejner = new JPanel(spravceObrazovek);
 
-        // Inicializace jednotlivých panelů
         this.panelHry = new PanelHry(this);
         this.panelMenu = new PanelMenu(this);
         this.panelKonec = new PanelKonecKola(this);
@@ -32,15 +30,33 @@ public class HerniOkno extends JFrame {
         add(hlavniKontejner);
         pack();
         setLocationRelativeTo(null);
-        zobrazObrazovku(TypObrazovky.MENU);
+
+        // REŠENÍ CHYBY: Volání ošetřené pomocí try-catch bloku
+        try {
+            zobrazObrazovku(TypObrazovky.MENU);
+        } catch (ChybaAplikaceException e) {
+            System.err.println("Kritická chyba při startu menu: " + e.getMessage());
+        }
     }
 
     public void spustHru(boolean protiPocitaci) {
         panelHry.nastavitRezim(protiPocitaci);
-        zobrazObrazovku(TypObrazovky.HRA);
+        // REŠENÍ CHYBY: Volání ošetřené pomocí try-catch bloku
+        try {
+            zobrazObrazovku(TypObrazovky.HRA);
+        } catch (ChybaAplikaceException e) {
+            System.err.println("Chyba při spouštění hry: " + e.getMessage());
+            // Defenzivní návrat: pokud hra selže, vrátíme uživatele bezpečně do menu
+            spravceObrazovek.show(hlavniKontejner, TypObrazovky.MENU.name());
+        }
     }
 
-    public void zobrazObrazovku(TypObrazovky typ) {
+    // Metoda korektně deklaruje, že může vyhodit výjimku
+    public void zobrazObrazovku(TypObrazovky typ) throws ChybaAplikaceException {
+        if (typ == null) {
+            throw new ChybaAplikaceException("Nelze zobrazit neexistující typ obrazovky (null pointer).");
+        }
+
         spravceObrazovek.show(hlavniKontejner, typ.name());
         if (typ == TypObrazovky.HRA) {
             SwingUtilities.invokeLater(() -> {
@@ -49,7 +65,6 @@ public class HerniOkno extends JFrame {
         }
     }
 
-    // OPRAVA: Tento getter zde chyběl a JUnit test ho vyžaduje
     public JPanel getObrazovku(TypObrazovky typ) {
         switch (typ) {
             case MENU: return panelMenu;

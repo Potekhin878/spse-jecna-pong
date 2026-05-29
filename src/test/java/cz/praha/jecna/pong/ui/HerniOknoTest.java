@@ -8,7 +8,7 @@ class HerniOknoTest {
     private HerniOkno okno;
 
     @BeforeEach
-    void inicializace() {
+    void inicializace() throws Exception { // PŘIDÁNO: throws Exception vyřeší hlášení kompilátoru
         okno = new HerniOkno();
     }
 
